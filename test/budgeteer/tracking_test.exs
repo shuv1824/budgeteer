@@ -24,5 +24,40 @@ defmodule Budgeteer.TrackingTest do
       assert budget.end_date == ~D[2025-01-31]
       assert budget.creator_id == user.id
     end
+
+    test "create_budget/2 requires name" do
+      user = Budgeteer.AccountsFixtures.user_fixture()
+
+      attrs_without_name = %{
+        description: "some description",
+        start_date: ~D[2025-01-01],
+        end_date: ~D[2025-01-31],
+        creator_id: user.id
+      }
+
+      assert {:error, %Ecto.Changeset{} = changeset} = Tracking.create_budget(attrs_without_name)
+
+      assert changeset.valid? == false
+      assert Keyword.keys(changeset.errors) == [:name]
+      assert %{name: ["can't be blank"]} = errors_on(changeset)
+    end
+
+    test "create_budget/2 requires valid dates" do
+      user = Budgeteer.AccountsFixtures.user_fixture()
+
+      attrs_end_before_start = %{
+        name: "some name",
+        description: "some description",
+        start_date: ~D[2025-12-01],
+        end_date: ~D[2025-01-31],
+        creator_id: user.id
+      }
+
+      assert {:error, %Ecto.Changeset{} = changeset} =
+               Tracking.create_budget(attrs_end_before_start)
+
+      assert changeset.valid? == false
+      assert %{end_date: ["must end after start date"]} = errors_on(changeset)
+    end
   end
 end
