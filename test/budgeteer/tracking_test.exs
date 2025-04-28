@@ -59,5 +59,10 @@ defmodule Budgeteer.TrackingTest do
       assert changeset.valid? == false
       assert %{end_date: ["must end after start date"]} = errors_on(changeset)
     end
+
+    test "list_budgets/0 returns all budgets" do
+      budget = budget_fixture()
+      assert Tracking.list_budgets() == [budget]
+    end
   end
 end
