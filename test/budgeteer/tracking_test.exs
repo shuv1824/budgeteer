@@ -64,5 +64,26 @@ defmodule Budgeteer.TrackingTest do
       budget = budget_fixture()
       assert Tracking.list_budgets() == [budget]
     end
+
+    test "list_budgets/1 scopes to the provided user" do
+      user = Budgeteer.AccountsFixtures.user_fixture()
+
+      budget = budget_fixture(%{creator_id: user.id})
+      _other_budget = budget_fixture()
+
+      assert Tracking.list_budgets(user: user) == [budget]
+    end
+
+    test "get_budget/1 returns the budget with given id" do
+      budget = budget_fixture()
+
+      assert Tracking.get_budget(budget.id) == budgets
+    end
+
+    test "get_budget/1 returns nil if no budget is found" do
+      _unrelated_budget = budget_fixture()
+
+      assert is_nil(Tracking.get_budget("45258592-6968-493c-90f3-e1795573e4af"))
+    end
   end
 end

@@ -4,7 +4,9 @@ defmodule BudgeteerWeb.BudgetListLive do
   alias Budgeteer.Tracking
 
   def mount(_params, _session, socket) do
-    budgets = Tracking.list_budgets()
+    budgets =
+      Tracking.list_budgets()
+      |> Budgeteer.Repo.preload(:creator)
 
     socket = assign(socket, budgets: budgets)
 
@@ -13,11 +15,13 @@ defmodule BudgeteerWeb.BudgetListLive do
 
   def render(assigns) do
     ~H"""
-    <ul>
-      <li :for={budget <- @budgets}>
-        {budget.name}
-      </li>
-    </ul>
+    <.table id="budgets" rows={@budgets}>
+      <:col :let={budget} label="Name">{budget.name}</:col>
+      <:col :let={budget} label="Description">{budget.description}</:col>
+      <:col :let={budget} label="Start Date">{budget.start_date}</:col>
+      <:col :let={budget} label="End Date">{budget.end_date}</:col>
+      <:col :let={budget} label="Creator">{budget.creator.name}</:col>
+    </.table>
     """
   end
 end
