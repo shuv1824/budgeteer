@@ -16,6 +16,7 @@ defmodule BudgeteerWeb.CreateBudgetDialog do
     {:ok, socket}
   end
 
+  @impl true
   def handle_event("validate", %{"budget" => params}, socket) do
     changeset =
       %Budget{}
