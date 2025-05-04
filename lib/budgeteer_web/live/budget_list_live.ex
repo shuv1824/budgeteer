@@ -5,8 +5,10 @@ defmodule BudgeteerWeb.BudgetListLive do
 
   def mount(_params, _session, socket) do
     budgets =
-      Tracking.list_budgets()
-      |> Budgeteer.Repo.preload(:creator)
+      Tracking.list_budgets(
+        user: socket.assigns.current_user,
+        preload: :creator
+      )
 
     socket = assign(socket, budgets: budgets)
 
