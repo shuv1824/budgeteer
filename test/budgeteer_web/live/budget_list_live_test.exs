@@ -57,10 +57,8 @@ defmodule BudgeteerWeb.BudgetListLiveTest do
       conn = log_in_user(conn, user)
       {:ok, lv, _html} = live(conn, ~p"/budgets/new")
 
-      form = form(lv, "#create-budget-modal form")
-
-      {:ok, _lv, html} =
-        render_submit(form, %{
+      form =
+        form(lv, "#create-budget-modal form", %{
           "budget" => %{
             "name" => "A new name",
             "description" => "The new description",
@@ -68,6 +66,9 @@ defmodule BudgeteerWeb.BudgetListLiveTest do
             "end_date" => "2025-01-31"
           }
         })
+
+      {:ok, _lv, html} =
+        render_submit(form)
         |> follow_redirect(conn)
 
       # submission_result = render_submit(form)
@@ -84,6 +85,49 @@ defmodule BudgeteerWeb.BudgetListLiveTest do
       assert created_budget.description == "The new description"
       assert created_budget.start_date == ~D[2025-01-01]
       assert created_budget.end_date == ~D[2025-01-31]
+    end
+
+    test "validation errors are presented when form is submitted with invalid input", %{
+      conn: conn,
+      user: user
+    } do
+      conn = log_in_user(conn, user)
+      {:ok, lv, _html} = live(conn, ~p"/budgets/new")
+
+      form =
+        form(lv, "#create-budget-modal form", %{
+          "budget" => %{"name" => ""}
+        })
+
+      html = render_submit(form)
+
+      assert html =~ html_escape("can't be blank")
+    end
+
+    test "end date before start date error is presented when form is submitted with invalid dates",
+         %{
+           conn: conn,
+           user: user
+         } do
+      conn = log_in_user(conn, user)
+      {:ok, lv, _html} = live(conn, ~p"/budgets/new")
+
+      # Creator ID isn't an input on the page, must be removed
+      attrs =
+        valid_budget_attributes(%{
+          start_date: ~D[2025-12-31],
+          end_date: ~D[2025-01-01]
+        })
+        |> Map.delete(:creator_id)
+
+      form =
+        form(lv, "#create-budget-modal form", %{
+          budget: attrs
+        })
+
+      html = render_submit(form)
+
+      assert html =~ "must end after start date"
     end
   end
 end
