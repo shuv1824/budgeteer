@@ -5,8 +5,10 @@ defmodule BudgeteerWeb.BudgetShowLive do
 
   def mount(%{"budget_id" => id}, _session, socket) do
     budget =
-      Tracking.get_budget(id)
-      |> Budgeteer.Repo.preload(:creator)
+      Tracking.get_budget(id,
+        user: socket.assigns.current_user,
+        preload: :creator
+      )
 
     if budget do
       {:ok, assign(socket, budget: budget)}
@@ -22,7 +24,7 @@ defmodule BudgeteerWeb.BudgetShowLive do
 
   def render(assigns) do
     ~H"""
-      {@budget.name} by {@budget.creator.name}
+    {@budget.name} by {@budget.creator.name}
     """
   end
 end
