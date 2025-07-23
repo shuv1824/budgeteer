@@ -68,6 +68,7 @@ defmodule BudgeteerWeb.Router do
       on_mount: [{BudgeteerWeb.UserAuth, :ensure_authenticated}] do
       live "/budgets", BudgetListLive
       live "/budgets/new", BudgetListLive, :new
+      live "/budgets/:budget_id", BudgetShowLive
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
     end
