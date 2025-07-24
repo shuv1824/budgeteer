@@ -55,6 +55,8 @@ defmodule BudgeteerWeb do
       use Phoenix.LiveView,
         layout: {BudgeteerWeb.Layouts, :app}
 
+      import Budgeteer.Guards
+
       unquote(html_helpers())
     end
   end
