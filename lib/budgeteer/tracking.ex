@@ -3,6 +3,7 @@ defmodule Budgeteer.Tracking do
 
   alias Budgeteer.Repo
   alias Budgeteer.Tracking.Budget
+  alias Budgeteer.Tracking.BudgetTransaction
 
   def create_budget(attrs \\ %{}) do
     %Budget{}
@@ -37,5 +38,39 @@ defmodule Budgeteer.Tracking do
 
   def change_budget(budget, attrs \\ %{}) do
     Budget.changeset(budget, attrs)
+  end
+
+  def create_budget_transaction(attrs \\ %{}) do
+    %BudgetTransaction{}
+    |> BudgetTransaction.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def list_transactions(budget_or_budget_id, criteria \\ [])
+
+  def list_transactions(%Budget{id: budget_id}, criteria),
+    do: list_transactions(budget_id, criteria)
+
+  def list_transactions(budget_id, criteria) do
+    transaction_query([{:budget, budget_id} | criteria])
+    |> Repo.all()
+  end
+
+  defp transaction_query(criteria) do
+    query = from(t in BudgetTransaction, order_by: [asc: :effective_date])
+
+    Enum.reduce(criteria, query, fn
+      {:budget, budget_id}, query ->
+        from t in query, where: t.budget_id == ^budget_id
+
+      {:order_by, binding}, query ->
+        from t in exclude(query, :order_by), order_by: ^binding
+
+      {:preload, bindings}, query ->
+        preload(query, ^bindings)
+
+      _, query ->
+        query
+    end)
   end
 end
