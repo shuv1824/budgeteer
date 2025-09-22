@@ -9,16 +9,14 @@ defmodule Budgeteer.TrackingTest do
     alias Budgeteer.Tracking.Budget
 
     test "create_budget/2 with valid data creates a budget" do
-      user = Budgeteer.AccountsFixtures.user_fixture()
+      attrs = params_with_assocs(:budget)
 
-      valid_attrs = valid_budget_attributes(%{creator_id: user.id})
-
-      assert {:ok, %Budget{} = budget} = Tracking.create_budget(valid_attrs)
-      assert budget.name == "some name"
-      assert budget.description == "some description"
-      assert budget.start_date == ~D[2025-01-01]
-      assert budget.end_date == ~D[2025-01-31]
-      assert budget.creator_id == user.id
+      assert {:ok, %Budget{} = budget} = Tracking.create_budget(attrs)
+      assert budget.name == attrs.name
+      assert budget.description == attrs.description
+      assert budget.start_date == attrs.start_date
+      assert budget.end_date == attrs.end_date
+      assert budget.creator_id == attrs.creator_id
     end
 
     test "create_budget/2 requires name" do
@@ -52,8 +50,8 @@ defmodule Budgeteer.TrackingTest do
     end
 
     test "list_budgets/0 returns all budgets" do
-      budget = budget_fixture()
-      assert Tracking.list_budgets() == [budget]
+      budgets = insert_pair(:budget)
+      assert Tracking.list_budgets() == without_preloads(budgets)
     end
 
     # test "list_budgets/1 scopes to the provided user" do
