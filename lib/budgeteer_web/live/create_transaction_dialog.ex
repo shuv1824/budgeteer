@@ -1,8 +1,8 @@
-defmodule BudgeeerWeb.CreateTransactionDialog do
+defmodule BudgeteerWeb.CreateTransactionDialog do
   use BudgeteerWeb, :live_component
 
-  alias Budgeeer.Tracking
-  alias Budgeeer.Tracking.BudgetTransaction
+  alias Budgeteer.Tracking
+  alias Budgeteer.Tracking.BudgetTransaction
 
   @impl true
   def update(assigns, socket) do
@@ -34,7 +34,7 @@ defmodule BudgeeerWeb.CreateTransactionDialog do
     transaction_params =
       Map.put(transaction_params, "budget_id", budget.id)
 
-    case Tracking.create_transaction(transaction_params) do
+    case Tracking.create_budget_transaction(transaction_params) do
       {:ok, _transaction} ->
         socket =
           socket

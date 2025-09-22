@@ -51,7 +51,7 @@ defmodule BudgeteerWeb.BudgetShowLive do
       show
     >
       <.live_component
-        module={BudgieWeb.CreateTransactionDialog}
+        module={BudgeteerWeb.CreateTransactionDialog}
         id="create-transaction"
         budget={@budget}
       />
